@@ -106,7 +106,7 @@ The transcription process uses NVIDIA's Parakeet model (tdt-0.6b-v2) for high-qu
 
 ## Notes
 
-- The system processes audio in chunks of 720 seconds (12 minutes) by default, It depends on your GPU performance
+- The system processes audio in chunks of 720 seconds (12 minutes) by default (RTX-4090), It depends on your GPU performance
 - Audio is automatically resampled to 16kHz for optimal transcription quality
 - Progress bars show real-time processing status
 - Total processing time and audio duration are displayed upon completion
