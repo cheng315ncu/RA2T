@@ -22,6 +22,7 @@ This project uses NVIDIA's Parakeet model (tdt-0.6b-v2) which is **strictly limi
 - Not for commercial use
 - Not for general speech recognition tasks
 - Not for non-English content
+- We're working to make this project a real-time transcription
 
 ## Project Structure
 
