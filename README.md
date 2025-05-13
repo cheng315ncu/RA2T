@@ -28,13 +28,13 @@ This project uses NVIDIA's Parakeet model (tdt-0.6b-v2) which is **strictly limi
 
 ```
 Audio2Text/
-├── Audio/              # Directory for storing audio files
-├── Clean_Text/         # Directory for storing clean text transcriptions
+├── Audio/             # Directory for storing audio files
+├── Clean_Text/        # Directory for storing clean text transcriptions
 ├── Script/            # Directory for storing SRT subtitle files
 ├── Urls/              # Directory for storing URL lists
 ├── download_yt.py     # YouTube audio downloader
 ├── test_mul.py        # Main transcription script
-└── test.py           # Test script
+└── test.py            # Test script
 ```
 
 ## Prerequisites
@@ -53,9 +53,9 @@ Audio2Text/
 ## Installation
 
 1. Clone the repository
-2. Install the required packages:
+2. Install the required packages (uv is highly recommend):
 ```bash
-pip install nemo-toolkit[all] librosa pytubefix pydub polars tqdm
+uv pip install nemo-toolkit[all] librosa pytubefix pydub polars tqdm
 ```
 
 ## Usage
