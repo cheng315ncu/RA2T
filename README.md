@@ -1,140 +1,112 @@
-# Audio2Text
+# Real-time Speech-to-Text Application
 
-A powerful tool for converting audio content to text with timestamps, specifically designed for processing YouTube videos and audio files.
+This application provides real-time speech-to-text functionality using NVIDIA's NeMo ASR model. It captures audio from your microphone and transcribes it in real-time.
 
-## Features
+## Usage Restrictions
 
-- YouTube video audio download and conversion
-- High-quality speech-to-text transcription using NVIDIA's Parakeet model
-- Timestamp generation for words, segments, and characters
-- SRT subtitle file generation
-- Clean text output
-- Batch processing support
-- Progress tracking with tqdm
+This project is specifically designed for:
+- NCU EMI (English as a Medium of Instruction) courses
+- Real-time English subtitles generation
+- Post-class transcription generation
+- Educational purposes
+- Personal use
 
-## Important Notice
-
-This project uses NVIDIA's Parakeet model (tdt-0.6b-v2) which is **strictly limited to English educational purposes only**. The model is sourced from [NVIDIA's Hugging Face Space](https://huggingface.co/spaces/nvidia/parakeet-tdt-0.6b-v2).
-
-### Usage Restrictions
-- Only for English language content
-- Limited to educational purposes
-- Not for commercial use
-- Not for general speech recognition tasks
-- Not for non-English content
-- We're working to make this project a real-time transcription
-
-## Project Structure
-
-```
-Audio2Text/
-├── Audio/             # Directory for storing audio files
-├── Clean_Text/        # Directory for storing clean text transcriptions
-├── Script/            # Directory for storing SRT subtitle files
-├── Urls/              # Directory for storing URL lists
-├── download_yt.py     # YouTube audio downloader
-├── test_mul.py        # Main transcription script
-└── test.py            # Test script
-```
+**Important**: This project is NOT intended for commercial use. Any commercial application or distribution is strictly prohibited.
 
 ## Prerequisites
 
-- Python 3.7+
-- NVIDIA GPU (recommended for faster processing)
-- Required Python packages:
-  - nemo
-  - librosa
-  - pytubefix
-  - pydub
-  - polars
-  - tqdm
-  - others please check nvidia/parakeet-tdt-0.6b-v2 official web
+- Python 3.8 or higher
+- Windows 10/11 (This application does not work in WSL)
+- A working microphone
+- NVIDIA GPU (recommended for better performance, I don't have a mac, but huggingface has model for mlx (Apple Silicon solution), you can adjust base on this project)
 
-## Installation
+## Why Not WSL?
 
-1. Clone the repository
-2. Install the required packages (uv is highly recommend):
+This application cannot run in WSL (Windows Subsystem for Linux) due to several limitations:
+
+1. **Audio Device Access**: WSL has limited access to Windows audio devices, making it difficult to capture real-time audio input.
+2. **CUDA Support**: While WSL2 supports CUDA, the audio device handling in WSL is not as robust as native Windows.
+3. **SoundDevice Library**: The `sounddevice` library used in this project has known issues with WSL's audio subsystem.
+
+## Environment Setup
+
+### 1. Install uv
+
+First, install `uv`, a fast Python package installer and resolver:
+
 ```bash
-uv pip install nemo-toolkit[all] librosa pytubefix pydub polars tqdm
+pip install uv
+```
+
+### 2. Create and Activate Virtual Environment
+
+```bash
+# Create a new virtual environment
+uv venv
+
+# Activate the virtual environment
+# On Windows:
+.venv\Scripts\activate
+```
+
+### 3. Install Dependencies
+
+```bash
+# Install dependencies using uv
+uv pip install -r requirements.txt
 ```
 
 ## Usage
 
-### 1. Downloading YouTube Audio
+1. Make sure your microphone is properly connected and set as the default input device.
 
-1. Create a CSV file in the `Urls` directory with a column named "URL" containing YouTube video URLs
-2. Run the download script:
+2. Run the application:
 ```bash
-python download_yt.py
+python A2T.py
 ```
 
-### 2. Transcribing Audio
+3. Start speaking into your microphone. The application will transcribe your speech in real-time.
 
-1. Place your audio files in the `Audio` directory
-2. Run the transcription script:
-```bash
-python test_mul.py
-```
+4. Press `Ctrl+C` to stop the application.
 
-The script will:
-- Process all audio files in the `Audio` directory
-- Generate SRT subtitle files in the `Script` directory
-- Create clean text transcriptions in the `Clean_Text` directory
-- Display progress and timing information
+## Features
 
-## Output Files
+- Real-time speech-to-text conversion (show on terminal, we're working to display over screen)
+- Automatic audio buffering and processing (adjust seconds for buffering base on speaker's habit)
+- Clean console output showing only transcription results (verbose = False)
+- Support for continuous speech recognition
 
-- **SRT Files**: Located in the `Script` directory, containing timestamped transcriptions
-- **Clean Text**: Located in the `Clean_Text` directory, containing plain text transcriptions
-- **Audio Files**: Stored in the `Audio` directory
+## Troubleshooting
 
-## Performance
+### Common Issues
 
-The transcription process uses NVIDIA's Parakeet model (tdt-0.6b-v2) for high-quality speech recognition. Processing time depends on:
-- Audio file length
-- Hardware specifications
-- Number of files being processed
+1. **No Audio Input**
+   - Check if your microphone is properly connected
+   - Verify that the microphone is set as the default input device
+   - Ensure the application has permission to access the microphone
 
-### Model Limitations
-- Optimized for English educational content
-- May not perform well on:
-  - Non-English audio
-  - Noisy environments
-  - Multiple speakers
-  - Non-educational content
-  - Commercial applications
+2. **CUDA/GPU Issues**
+   - Make sure you have the proper NVIDIA drivers installed
+   - Verify CUDA installation if using GPU acceleration
 
-## Notes
+3. **Performance Issues**
+   - The application works best with an NVIDIA GPU
+   - CPU-only mode may be slower
 
-- The system processes audio in chunks of 720 seconds (12 minutes) by default (RTX-4090), It depends on your GPU performance
-- Audio is automatically resampled to 16kHz for optimal transcription quality
-- Progress bars show real-time processing status
-- Total processing time and audio duration are displayed upon completion
-- Please ensure all processed content is English educational material only
+## Dependencies
+
+- numpy>=1.21.0
+- sounddevice>=0.4.5
+- nemo-toolkit[asr]>=1.20.0
+- torch>=2.0.0
 
 ## License
 
-MIT License
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-Copyright (c) 2025 Cheng Lin
+**Note**: While this project is under MIT License, its usage is restricted to educational and personal purposes only. Commercial use is not permitted.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+## Acknowledgments
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-## Contributing
-
+- NVIDIA NeMo team for the ASR model
+- Cheng Lin from BorgLab NCU
