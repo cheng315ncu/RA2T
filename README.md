@@ -2,6 +2,19 @@
 
 This application provides real-time speech-to-text functionality using NVIDIA's NeMo ASR model. It captures audio from your microphone and transcribes it in real-time.
 
+## Model Information
+
+This project uses the NVIDIA Parakeet TDT 0.6B V2 model from Hugging Face:
+- Source: [nvidia/parakeet-tdt-0.6b-v2](https://huggingface.co/nvidia/parakeet-tdt-0.6b-v2)
+- Model Architecture: FastConformer-TDT
+- Model Size: 600 million parameters
+- Features:
+  - Accurate word-level timestamp predictions
+  - Automatic punctuation and capitalization
+  - Robust performance on spoken numbers and song lyrics transcription
+
+**License Note**: The model is governed by the CC-BY-4.0 license. While this model is available for commercial use, this specific project implementation is restricted to educational and personal purposes only.
+
 ## Usage Restrictions
 
 This project is specifically designed for:
@@ -104,7 +117,7 @@ python A2T.py
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-**Note**: While this project is under MIT License, its usage is restricted to educational and personal purposes only. Commercial use is not permitted.
+**Note**: While this project is under MIT License, its usage is restricted to educational and personal purposes only. Commercial use is not permitted. The underlying ASR model (Parakeet TDT 0.6B V2) is governed by the CC-BY-4.0 license.
 
 ## Acknowledgments
 
