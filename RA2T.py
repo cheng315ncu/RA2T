@@ -8,6 +8,7 @@ import time
 import contextlib
 import sys
 import os
+from collections import deque
 
 # Set NeMo logging level
 nemo_logging.set_verbosity(nemo_logging.CRITICAL)
@@ -19,7 +20,9 @@ asr_model = nemo_asr.models.ASRModel.from_pretrained(model_name="nvidia/parakeet
 SAMPLE_RATE = 16000  # Sampling rate
 CHANNELS = 1         # Mono channel
 CHUNK_SIZE = 1024    # Audio chunk size
-BUFFER_SIZE = 5      # Buffer size (seconds)
+BUFFER_SIZE = 3      # Buffer size (seconds)
+WINDOW_SIZE = 3      # Sliding window size in seconds
+OVERLAP = 1          # Overlap between windows in seconds
 
 # Create audio buffer
 audio_queue = queue.Queue()
@@ -42,34 +45,42 @@ def audio_callback(indata, frames, time, status):
     audio_queue.put(indata.copy())
 
 def process_audio():
-    """Process audio and perform transcription"""
-    buffer = []
+    """Process audio and perform transcription using sliding window"""
+    window_buffer = deque(maxlen=int(WINDOW_SIZE * SAMPLE_RATE))
     last_process_time = time.time()
+    last_transcription = ""
     
     while is_recording:
         try:
             # Get audio data from buffer
             audio_chunk = audio_queue.get(timeout=1)
-            buffer.extend(audio_chunk.flatten())
+            window_buffer.extend(audio_chunk.flatten())
             
-            # Process audio every 3 seconds
+            # Process audio every WINDOW_SIZE - OVERLAP seconds
             current_time = time.time()
-            if current_time - last_process_time >= 3 and len(buffer) > 0:
+            if current_time - last_process_time >= (WINDOW_SIZE - OVERLAP) and len(window_buffer) > 0:
                 # Convert buffer to numpy array
-                audio_data = np.array(buffer)
+                audio_data = np.array(list(window_buffer))
                 
                 # Use context manager to suppress transcription progress bar
                 with suppress_stdout():
                     # Perform transcription
                     output = asr_model.transcribe([audio_data], timestamps=True, batch_size=1, verbose=False)
                 
-                # Only show transcription results
+                # Process transcription results
                 if output[0].timestamp['segment']:
+                    current_transcription = ""
                     for segment in output[0].timestamp['segment']:
-                        print(segment['segment'])
+                        current_transcription += segment['segment'] + " "
+                    
+                    # Only print new content
+                    if current_transcription != last_transcription:
+                        print(current_transcription.strip())
+                        last_transcription = current_transcription
                 
-                # Clear buffer
-                buffer = []
+                # Keep the last OVERLAP seconds of audio for next window
+                overlap_samples = int(OVERLAP * SAMPLE_RATE)
+                window_buffer = deque(list(window_buffer)[-overlap_samples:], maxlen=int(WINDOW_SIZE * SAMPLE_RATE))
                 last_process_time = current_time
                 
         except queue.Empty:
